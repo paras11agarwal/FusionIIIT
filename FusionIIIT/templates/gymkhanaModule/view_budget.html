@@ -1,0 +1,181 @@
+{% load static %}
+{% block view_budget %}
+
+    {% comment %}The tab menu starts here!{% endcomment %}
+    <div class="ui pointing secondary menu">
+
+        <a class="active item" data-tab="club">
+            Club Budget
+        </a>
+
+        <a class="item" data-tab="fest">
+            Fest Budget
+        </a>
+    </div>
+
+    <script type="text/javascript">
+        function display_fest() {
+            // body...
+            var d = document.getElementById('fest_budget').value;
+            //alert(d);
+            document.getElementById(d).hidden = false;
+        }
+        function display_club() {
+            // body...
+            var data = "_"+document.getElementById('club_budget').value;
+            //alert(e);
+            document.getElementById(data).hidden = false;
+            
+            alert("f");
+
+        }       
+    </script>
+
+    <div class="ui active tab" data-tab="club">
+        <div class="ui vertical segment">
+            <form class="ui form" style="padding-left: 32px; padding-right: 32px;">
+                <div class="field">
+                    <div class="field">
+                        <label>Club</label>
+                        <select class="ui search fluid dropdown" id="club_budget" onchange="display_club();">
+                            <option value="">Select</option>
+                            {% for i in Club_name %}
+                                <option value="{{ i.club_name }}">{{ i.club_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <br>
+            <h4 class="ui dividing header" style="margin-left: 32px; margin-right: 32px;">Club Budget</h4>
+            <table class="ui very basic collapsing celled sortable table"
+                   style="padding-left: 2.5%; padding-right: 2.5%;padding-top: 1%; padding-bottom: 1.5%; margin: auto;">
+                <thead>
+                <tr>
+                    <th class="five wide column">
+                        Club
+                    </th>
+
+                    <th>
+                        Co-ordinator
+                    </th>
+
+                    <th>
+                        Budget File
+                    </th>
+
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for i in Club_budget %}
+                    {% if i.status == "confirmed" %}
+                        <tr id="_{{ i.club.club_name }}" hidden="true">
+                            <td>
+                                {{ i.club.club_name }}
+                            </td>
+
+                            <td>
+                                <h4 class="ui image header">
+                                    <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
+                                    <div class="content">
+                                        {{ i.club.co_ordinator }}
+                                    </div>
+                                </h4>
+                            </td>
+
+                            <td>
+                                {% comment %}
+                                    TODO: Add the attachment here!
+                                {% endcomment %}
+                                <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.budget_file.url }}">
+                                    <i class="large attach black icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <br>
+            <div class="ui divider"></div>
+        </div>
+        <br>
+        <div class="extra content"></div>
+    </div>
+
+    <div class="ui tab" data-tab="fest">
+        <div class="ui vertical segment">
+            <form class="ui form" style="padding-left: 32px; padding-right: 32px;">
+                <div class="field">
+                    <div class="field">
+                        <label>Fest</label>
+                        <select id="fest_budget" class="ui search fluid dropdown" onchange="display_fest();">
+                            <option value="">Select</option>
+                            <option value="Gusto">Gusto </option>
+                            <option value="Tarang">Tarang </option>
+                            <option value="Abhikalpan">Abhikalpan </option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <br>
+
+            <h4 class="ui dividing header" style="margin-left: 32px; margin-right: 32px;">Fest Budget</h4>
+
+            <table class="ui very basic collapsing celled sortable table"
+                   style="padding-left: 2.5%; padding-right: 2.5%;padding-top: 1%; padding-bottom: 1.5%; margin: auto;">
+                <thead>
+                <tr>
+                    <th class="five wide column">
+                        Fest
+                    </th>
+
+                    <th>
+                        Year
+                    </th>
+                    
+                    <th>
+                        Budget File
+                    </th>
+
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for i in Fest_budget %}
+                    {% if i.status == "confirmed" %}
+                        <tr id="{{ i.fest }}"  hidden="true" >
+                            <td>
+                                {{ i.fest }}
+                            </td>
+
+                            <td>
+                               {{ i.year }}
+                            </td>
+
+                            <td>
+                                {% comment %}
+                                    TODO: Add the attachment here!
+                                {% endcomment %}
+                                <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.budget_file.url }}">
+                                    <i class="large attach black icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <br>
+            <div class="ui divider"></div>
+        </div>
+        <br>
+        <div class="extra content"></div>
+    </div>
+{% endblock %}
+
+
