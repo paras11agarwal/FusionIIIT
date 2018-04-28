@@ -5,54 +5,75 @@
     <div class="ui pointing secondary menu">
 
         <a class="active item" data-tab="club">
-            Club Budget
+            Club Details
+        </a>
+        {% if request.user.extrainfo.designation.name != "superintendent" %}
+        <a class="item" data-tab="session">
+            Club Sessions
+        </a>
+        {% endif %}
+         <a class="item" data-tab="event">
+            Club Events
         </a>
 
-        <a class="item" data-tab="fest">
-            Fest Budget
-        </a>
     </div>
 
+    {% for i in Club_name %}
+        <div class="ui small modal {{ i.club_name }}_" >
+            <i class="close icon"></i>
+            <div class="header">
+                Club Info
+            </div>
+            <div class="image content">
+                <div class="ui medium image">
+                  <img src="{% static 'globals/img/zlatan.jpg' %}">
+                </div>
+                <div class="description">
+                    <div class="ui header">
+                    <p>{{ i.club_name }}</p>
+                    </div>
+                    <p>{{ i.co_ordinator }} &nbsp; Club</p>
+                    <p>{{ i.co_coordinator }}</p>
+                    <p>{{i.description}}</p>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="ui black deny button">
+                    Close
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
+    <!-- modal script enable -->
     <script type="text/javascript">
-        function display_fest() {
+        // function display_fest() {
+        //     // body...
+        //     var d = document.getElementById('fest_budget').value;
+        //     //alert(d);
+        //     document.getElementById(d).hidden = false;
+        // }
+        function view_(a) {
             // body...
-            var d = document.getElementById('fest_budget').value;
-            //alert(d);
-            document.getElementById(d).hidden = false;
+            //$('.ui.modal').find("input").val({'name':id}); 
+            var id = '.ui.small.modal.'+a;
+            $(id).modal('show');
         }
-        function display_club() {
-            // body...
-            var data = "_"+document.getElementById('club_budget').value;
+        
+        function display_club_session() {
+            var data1 = "_"+document.getElementById('club_session_').value+"_";
             //alert(e);
-            document.getElementById(data).hidden = false;
-            
-            alert("f");
-
+            document.getElementById(data1).hidden = false;
         }       
     </script>
 
     <div class="ui active tab" data-tab="club">
         <div class="ui vertical segment">
-            <form class="ui form" style="padding-left: 32px; padding-right: 32px;">
-                <div class="field">
-                    <div class="field">
-                        <label>Club</label>
-                        <select class="ui search fluid dropdown" id="club_budget" onchange="display_club();">
-                            <option value="">Select</option>
-                            {% for i in Club_name %}
-                                <option value="{{ i.club_name }}">{{ i.club_name }} </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </form>
-            <br>
-            <h4 class="ui dividing header" style="margin-left: 32px; margin-right: 32px;">Club Budget</h4>
             <table class="ui very basic collapsing celled sortable table"
                    style="padding-left: 2.5%; padding-right: 2.5%;padding-top: 1%; padding-bottom: 1.5%; margin: auto;">
                 <thead>
                 <tr>
-                    <th class="five wide column">
+                    <th >
                         Club
                     </th>
 
@@ -61,39 +82,50 @@
                     </th>
 
                     <th>
-                        Budget File
+                        Co-Coordinator
+                    </th>
+
+                    <th>
+                        Activity Calender
                     </th>
 
                 </tr>
                 </thead>
 
                 <tbody>
-                {% for i in Club_budget %}
-                    {% if i.status == "confirmed" %}
-                        <tr id="_{{ i.club.club_name }}" hidden="true">
-                            <td>
-                                {{ i.club.club_name }}
-                            </td>
+                {% for i in Club_name %}
+                    <tr id="_{{ i.club_name }}">
+                        <td onclick="view_('{{ i.club_name }}_')">
+                            {{ i.club_name }}
+                        </td>
 
-                            <td>
-                                <h4 class="ui image header">
-                                    <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
-                                    <div class="content">
-                                        {{ i.club.co_ordinator }}
-                                    </div>
-                                </h4>
-                            </td>
+                        <td>
+                            <h4 class="ui image header">
+                                <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
+                                <div class="content">
+                                    {{ i.co_ordinator }}
+                                </div>
+                            </h4>
+                        </td>
 
-                            <td>
-                                {% comment %}
-                                    TODO: Add the attachment here!
-                                {% endcomment %}
-                                <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.budget_file.url }}">
-                                    <i class="large attach black icon"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endif %}
+                        <td>
+                            <h4 class="ui image header">
+                                <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
+                                <div class="content">
+                                    {{ i.co_coordinator }}
+                                </div>
+                            </h4>
+                        </td>
+
+                        <td>
+                            {% comment %}
+                                TODO: Add the attachment here!
+                            {% endcomment %}
+                            <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.activity_calender.url }}">
+                                <i class="large attach black icon"></i>
+                            </a>
+                        </td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>
@@ -105,67 +137,81 @@
         <div class="extra content"></div>
     </div>
 
-    <div class="ui tab" data-tab="fest">
+    <div class="ui tab" data-tab="session">
         <div class="ui vertical segment">
             <form class="ui form" style="padding-left: 32px; padding-right: 32px;">
                 <div class="field">
-                    <div class="field">
-                        <label>Fest</label>
-                        <select id="fest_budget" class="ui search fluid dropdown" onchange="display_fest();">
-                            <option value="">Select</option>
-                            <option value="Gusto">Gusto </option>
-                            <option value="Tarang">Tarang </option>
-                            <option value="Abhikalpan">Abhikalpan </option>
-                        </select>
-                    </div>
+                    <label>Club</label>
+                    {% for i in Club_member %}
+                    <select class="ui search fluid dropdown" name="club" id="club_session_" onchange="display_club_session()" required>
+                        <option value="">Select</option>
+                        {% for i in Club_member %}
+                            {% if request.user.username in i.member.id.user|stringformat:"s" and i.status == "confirmed" %}
+                                <option value="{{ i.club.club_name }}">{{ i.club.club_name }} </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    {%endfor%}
                 </div>
             </form>
-
             <br>
-
-            <h4 class="ui dividing header" style="margin-left: 32px; margin-right: 32px;">Fest Budget</h4>
-
+            <h4 class="ui dividing header" style="margin-left: 32px; margin-right: 32px;">Club Details</h4>
             <table class="ui very basic collapsing celled sortable table"
                    style="padding-left: 2.5%; padding-right: 2.5%;padding-top: 1%; padding-bottom: 1.5%; margin: auto;">
                 <thead>
                 <tr>
                     <th class="five wide column">
-                        Fest
+                        Venue
                     </th>
 
                     <th>
-                        Year
+                        Date
                     </th>
-                    
+
                     <th>
-                        Budget File
+                        Details
                     </th>
+
+                    <!-- <th>
+                        Budget File
+                    </th> -->
 
                 </tr>
                 </thead>
 
                 <tbody>
-                {% for i in Fest_budget %}
-                    {% if i.status == "confirmed" %}
-                        <tr id="{{ i.fest }}"  hidden="true" >
-                            <td>
-                                {{ i.fest }}
-                            </td>
+                {% for i in Club_session %}
+                    <tr id="_{{ i.club }}_" hidden="true">
+                        <td>
+                            {{ i.venue }}
+                        </td>
 
-                            <td>
-                               {{ i.year }}
-                            </td>
+                        <td>
+                            {{ i.date }}
+                        </td>
 
-                            <td>
-                                {% comment %}
-                                    TODO: Add the attachment here!
-                                {% endcomment %}
-                                <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.budget_file.url }}">
-                                    <i class="large attach black icon"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    {% endif %}
+                        <td>
+                            {{ i.details }}
+                        </td>
+
+<!--                         <td>
+                            <h4 class="ui image header">
+                                <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
+                                <div class="content">
+                                    {{ i.co_ordinator }}
+                                </div>
+                            </h4>
+                        </td>
+ -->
+                        <!-- <td>
+                            {% comment %}
+                                TODO: Add the attachment here!
+                            {% endcomment %}
+                            <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.budget_file.url }}">
+                                <i class="large attach black icon"></i>
+                            </a>
+                         --></td>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>

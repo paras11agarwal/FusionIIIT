@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^new_session/$',views.new_session,name='new_session'),
     url(r'^festbudget/$',views.fest_budget,name='fest_budget'),
     url(r'^approve/$',views.approve,name='approve'),
-    url(r'^reject/$',views.reject,name='reject')
+    url(r'^reject/$',views.reject,name='reject'),
+    url(r'^cancel/$',views.cancel,name='cancel')
 ]

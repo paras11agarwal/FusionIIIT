@@ -8,27 +8,50 @@ from applications.academic_information.models import Student
 from django.contrib.auth.models import User
 from django.utils.dateparse import parse_date
 
-def retrun_content():
+def retrun_content(roll, name,desig):
 	students = ExtraInfo.objects.all().filter(user_type = "student")
 	faculty = ExtraInfo.objects.all().filter(user_type = "faculty")
 	club_name = Club_info.objects.all()
 	club_member = Club_member.objects.all()
 	fest_budget = Fest_budget.objects.all()
 	club_budget = Club_budget.objects.all()
+	club_session = Session_info.objects.all()
+	club_event = Club_report.objects.all()
+
+	# user = name +" - "+ roll
+	if desig == 'student':
+		user_name = get_object_or_404(User, username = str(roll))
+		extra = get_object_or_404(ExtraInfo, id = name.lower(), user = user_name)
+		student = get_object_or_404(Student, id = extra)
+
+		curr_club = list(Club_member.objects.all().filter(member = student).values_list('club'))
+		
+		b = [i for sub in curr_club for i in sub]
+		print b
+	else :
+		b = []
+	# print roll, name.lower()
+
 	content = {
 		'Students' : students,
 		'Club_name' : club_name,
 		'Faculty' : faculty,
 		'Club_member' : club_member,
 		'Fest_budget' : fest_budget,
-		'Club_budget' : club_budget
+		'Club_budget' : club_budget,
+		'Club_session': club_session,
+		'Club_event' : club_event,
+		'Curr_club' : b
 	}
 	return content
 
 @login_required
 def gymkhana(request):
-	
-	return render(request, "gymkhanaModule/gymkhana.html", retrun_content())
+
+	roll = request.user
+	name = request.user.first_name +"_"+ request.user.last_name
+	desig = request.user.extrainfo.user_type
+	return render(request, "gymkhanaModule/gymkhana.html", retrun_content(roll, name,desig))
 
 @login_required
 def club_membership(request):
@@ -108,6 +131,7 @@ def new_club(request):
 
 		club_info = Club_info(club_name = club_name, category = category, co_ordinator = co_student, co_coordinator = coco_student, faculty_incharge = faculty, club_file = club_file, description = d_d)
 		club_info.save()
+		
 		messages.success(request,"Successfully sent the request !!!")
 	
 	return redirect('/gymkhana/')
@@ -318,5 +342,27 @@ def reject(request):
 		club_member.remarks = remarks[0]
 		club_member.save()
 		messages.success(request,"Successfully rejected !!!")
+
+	return redirect ('/gymkhana/')
+
+@login_required
+def cancel(request):
+	
+	lis = list(request.POST.getlist('check'))
+
+	for user in lis :
+		#pos = lis.index(user)
+		user = user.split(',')
+		info = user[0].split(' - ')
+
+		#getting queryset class objects
+		user_name = get_object_or_404(User, username = info[1])
+		extra1 = get_object_or_404(ExtraInfo, id = info[0], user = user_name)
+		student = get_object_or_404(Student, id = extra1)
+
+		club_member = get_object_or_404(Club_member, club = user[1], member = student)
+		
+		club_member.delete()
+		messages.success(request,"Successfully deleted !!!")
 
 	return redirect ('/gymkhana/')

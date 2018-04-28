@@ -17,7 +17,26 @@
             });
         });
     </script> -->
-    
+    <script type="text/javascript">
+        function setDate(){
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth()+1; //January is 0!
+        var yyyy = today.getFullYear();
+         if(dd<10){
+                dd='0'+dd
+            } 
+            if(mm<10){
+                mm='0'+mm
+            } 
+
+        today = dd+'/'+mm+'/'+yyyy;
+        // document.getElementById("datefield").setAttribute("min", today);
+        var dateControl = document.querySelector('input[type="date"]');
+        dateControl.value = today;
+        }
+
+    </script>
     <div class="ui vertical segment">
         <form method="post" id="change_head_form">
         {% csrf_token %}
@@ -100,9 +119,11 @@
                 <div class="three fields">
                     <div class="eight wide field">
                         <label>Date</label>
-                        <input class="ui input date" type="date" data-date-format="YYYY-MM-DD" placeholder="From" name="date" required></input>
+                        <input class="ui input date" type="date" data-date-format="DD/MM/YYYY" placeholder="From" name="date" id="datefield" min="01/04/2018" required></input>
                     </div>
-
+                    <script type="text/javascript">
+                        $("#datefield").validate();
+                    </script>
                     <div class="eight wide field">
                         <label>Time</label>
                         <input class="ui input" type="time" name="time" required></input>

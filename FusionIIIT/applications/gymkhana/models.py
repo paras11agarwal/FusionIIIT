@@ -67,7 +67,6 @@ class Core_team(models.Model):
 	year = models.DateTimeField(max_length=6, null=True)
 	fest_name = models.CharField(max_length=256, null=False,choices=Constants.fest)
 	pda = models.TextField(max_length=256, null=False)
-	status = models.CharField(max_length=50, choices=Constants.status, default = 'open')
 	remarks = models.CharField(max_length=256, null=True)
 
 	def __str__(self):
