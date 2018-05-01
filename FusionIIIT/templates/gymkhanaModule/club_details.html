@@ -7,15 +7,15 @@
         <a class="active item" data-tab="club">
             Club Details
         </a>
-        {% if request.user.extrainfo.designation.name != "superintendent" %}
+        {% if "superintendent" not in Curr_desig and "dean(S)" not in Curr_desig %}
         <a class="item" data-tab="session">
             Club Sessions
         </a>
-        {% endif %}
+        
          <a class="item" data-tab="event">
             Club Events
         </a>
-
+        {%  endif %}
     </div>
 
     {% for i in Club_name %}
@@ -150,8 +150,9 @@
                 </thead>
 
                 <tbody>
-                {% if request.user.extrainfo.designation.name == "superintendent" %}
+                {% if "superintendent" in Curr_desig or "dean(S)" in Curr_desig %}
                     {% for i in Club_name %}
+                        {% if i.status == "confirmed" %}
                         <tr id="_{{ i.club_name }}">
                             <td onclick="view_('{{ i.club_name }}_')">
                                 {{ i.club_name }}
@@ -184,6 +185,46 @@
                                 </a>
                             </td>
                         </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if "co-ordinator" in Curr_desig or "co co-ordinator" in Curr_desig %}
+                    {% for i in Club_name %}
+                     {% if i.status == "confirmed" %}
+                        <tr id="_{{ i.club_name }}">
+                            <td onclick="view_('{{ i.club_name }}_')">
+                                {{ i.club_name }}
+                            </td>
+
+                            <td>
+                                <h4 class="ui image header">
+                                    <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
+                                    <div class="content">
+                                        {{ i.co_ordinator }}
+                                    </div>
+                                </h4>
+                            </td>
+
+                            <td>
+                                <h4 class="ui image header">
+                                    <img src="{% static 'globals/img/zlatan.jpg' %}" class="ui mini circular image">
+                                    <div class="content">
+                                        {{ i.co_coordinator }}
+                                    </div>
+                                </h4>
+                            </td>
+
+                            <td>
+                                {% comment %}
+                                    TODO: Add the attachment here!
+                                {% endcomment %}
+                                <a class="ui inverted circular icon button" style="margin: auto;" target="_blank" href="{{ i.activity_calender.url }}">
+                                    <i class="large attach black icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
                     {% endfor %}
                 {% else %}
                     {% for i in Club_member %}
@@ -240,11 +281,19 @@
                     <label>Club</label>
                     <select class="ui search fluid dropdown" name="club" id="club_session_" onchange="display_club_session()" required>
                         <option value="">Select</option>
-                        {% for i in Club_member %}
-                            {% if request.user.username in i.member.id.user|stringformat:"s" and i.status == "confirmed" %}
-                                <option value="{{ i.club.club_name }}">{{ i.club.club_name }} </option>
-                            {% endif %}
-                        {% endfor %}
+                        {% if "co-ordinator" in Curr_desig or "co co-ordinator" in Curr_desig %}
+                            {% for i in Club_name %}
+                                {% if request.user.username in i.co_ordinator|stringformat:"s" and i.status == "confirmed" %}
+                                    <option value="{{ i.club_name }}">{{ i.club_name }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% for i in Club_member %}
+                                {% if request.user.username in i.member.id.user|stringformat:"s" and i.status == "confirmed" %}
+                                    <option value="{{ i.club.club_name }}">{{ i.club.club_name }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
             </form>
@@ -324,11 +373,19 @@
                     <label>Club</label>
                     <select class="ui search fluid dropdown" name="club" id="club_events_" onchange="display_club_events()" required>
                         <option value="">Select</option>
-                        {% for i in Club_member %}
-                            {% if request.user.username in i.member.id.user|stringformat:"s" and i.status == "confirmed" %}
-                                <option value="{{ i.club }}">{{ i.club.club_name }} </option>
-                            {% endif %}
-                        {% endfor %}
+                        {% if "co-ordinator" not in Curr_desig %}
+                            {% for i in Club_member %}
+                                {% if request.user.username in i.member.id.user|stringformat:"s" and i.status == "confirmed" %}
+                                    <option value="{{ i.club.club_name }}">{{ i.club.club_name }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% for i in Club_name %}
+                                {% if request.user.username in i.co_ordinator|stringformat:"s" and i.status == "confirmed" %}
+                                    <option value="{{ i.club_name }}">{{ i.club_name }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
             </form>

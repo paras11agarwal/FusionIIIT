@@ -48,8 +48,8 @@
                     <select class="ui search fluid dropdown" name="club" required>
                         <option value="">Select</option>
                         {% for i in Club_name %}
-                            {% if request.user.username in i.co_ordinator|stringformat:"s" %}
-                                <option value="{{ i.club_name }}">{{ i.club_name }} </option>
+                            {% if i.status == "confirmed" %}
+                            <option value="{{ i.club_name }}">{{ i.club_name }} </option>
                             {% endif %}
                         {% endfor %}
                     </select>

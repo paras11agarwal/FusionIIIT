@@ -27,7 +27,9 @@
 
             <div class="meta">
                 <span>
-                    {{ request.user.extrainfo.designation.name}}
+                    {% for i in Curr_desig %}
+                        {{ i }} 
+                    {% endfor %}
                 </span>
             </div>
         </div>

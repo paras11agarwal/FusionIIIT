@@ -27,7 +27,9 @@
                     <select class="ui search fluid dropdown" id="club_name" onchange="display();" required>
                         <option value="">Select</option>
                         {% for i in Club_name %}
+                            {% if i.status == "confirmed" %}
                             <option value="{{ i.club_name }}">{{ i.club_name }} </option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>

@@ -36,8 +36,11 @@ class Club_info(models.Model):
 	co_coordinator = models.ForeignKey(Student, null=False, related_name='coco_of')
 	faculty_incharge = models.ForeignKey(Faculty, null=False, related_name='faculty_incharge_of')	
 	club_file = models.FileField(upload_to='uploads/',null=True)
-	activity_calender = models.FileField(upload_to='uploads/',null=True)
+	activity_calender = models.FileField(upload_to='uploads/',null=True, default= " ")
 	description = models.TextField(max_length=256, null=True)
+	alloted_budget=models.IntegerField(null=True, default = 0)
+	spent_budget = models.IntegerField(null=True, default = 0)
+	avail_budget=models.IntegerField(null=True, default = 0)
 	status = models.CharField(max_length=50, choices = Constants.status, default = 'open')
 
 	def __str__(self):

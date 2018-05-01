@@ -61,34 +61,35 @@
             <div class="ui divider"></div>
 
             {% comment %}The Tab-Menu starts here!{% endcomment %}
+
             <div class="ui huge fluid vertical pointing menu"
                  style="max-width: 320px;">
-                {% with '"superintendent" "dean(S)"' as list %}
-                {% if request.user.extrainfo.designation.name not in list %}
+                
+                {% if "superintendent" not in Curr_desig and "dean(S)" not in Curr_desig %}
+
                     <a class="item" data-tab="first">
                         Apply
                         <i class="right floated chevron right icon"></i>
                     </a>
                     <a class="item" data-tab="last">
-                        View sent requests
+                        Submitted requests
                         <i class="right floated chevron right icon"></i>
                     </a>
                 {% endif %}
-                {% endwith %}
+                
                 <a class="item" data-tab="twelth">
                     View Club Details
                     <i class="right floated chevron right icon"></i>
                 </a>
-                {% with '"co-ordinator" "co co-ordinator" "root"' as list %}
-                {% if request.user.extrainfo.designation.name in list %}
+                
+                {% if "co-ordinator" in Curr_desig and "co co-ordinator" in Curr_desig %}
                     <a class="item" data-tab="fifth">
                         New Session
                         <i class="right floated chevron right icon"></i>
                     </a>
                 {% endif %}
-                {% endwith %}
-    
-                {% if request.user.extrainfo.designation.name == "co-ordinator" or request.user.username == "root" %}
+                
+                {% if "co-ordinator" in Curr_desig or request.user.username == "root" %}
                     <a class="item" data-tab="sixth">
                         Member Requests
                         <i class="right floated chevron right icon"></i>
@@ -112,15 +113,16 @@
                     <i class="right floated chevron right icon"></i>
                 </a>
                 
-                {% with '"dean(S)"' as list %}
-                {% if request.user.extrainfo.designation.name in list %}
+                <!-- {% with '"dean(S)"' as list %}
+                {% if request.user.holdsdesignation.designation.name in list %}
                 <a class="item" data-tab="seventh">
                     Approval Requests
                     <i class="right floated chevron right icon"></i>
                 </a>
                 {% endif %}
-                {% endwith %}
-                {% if request.user.extrainfo.designation.name == "superintendent" or request.user.username == "root" %}
+                {% endwith %} -->
+                {% if "superintendent" in Curr_desig or request.user.username == "root" %}
+                    
                     <a class="item" data-tab="fourth">
                         Fest Budget
                         <i class="right floated chevron right icon"></i>
@@ -132,7 +134,7 @@
                     <a class="item" data-tab="eleventh">
                         Submit Event report
                         <i class="right floated chevron right icon"></i>
-                </a>
+                    </a>
                 {% endif %}
             </div>
             {% comment %}The Tab-Menu ends here!{% endcomment %}

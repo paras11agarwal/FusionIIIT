@@ -3,12 +3,12 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import *
-from applications.globals.models import ExtraInfo, Designation
+from applications.globals.models import *
 from applications.academic_information.models import Student
 from django.contrib.auth.models import User
 from django.utils.dateparse import parse_date
 
-def retrun_content(roll, name,desig):
+def retrun_content(roll, name, desig):
 	students = ExtraInfo.objects.all().filter(user_type = "student")
 	faculty = ExtraInfo.objects.all().filter(user_type = "faculty")
 	club_name = Club_info.objects.all()
@@ -19,14 +19,16 @@ def retrun_content(roll, name,desig):
 	club_event = Club_report.objects.all()
 
 	# user = name +" - "+ roll
-	if desig == 'student':
+	b=[]
+	print roll, name, desig
+	if 'student' in desig:
 		user_name = get_object_or_404(User, username = str(roll))
 		extra = get_object_or_404(ExtraInfo, id = name.lower(), user = user_name)
 		student = get_object_or_404(Student, id = extra)
 
-		curr_club = list(Club_member.objects.all().filter(member = student).values_list('club'))
+		# curr_club = list(Club_member.objects.all().filter(member = student).values_list('club'))
 		
-		b = [i for sub in curr_club for i in sub]
+		# b = [i for sub in curr_club for i in sub]
 		print b
 	else :
 		b = []
@@ -41,7 +43,8 @@ def retrun_content(roll, name,desig):
 		'Club_budget' : club_budget,
 		'Club_session': club_session,
 		'Club_event' : club_event,
-		'Curr_club' : b
+		'Curr_club' : b,
+		'Curr_desig' : desig
 	}
 	return content
 
@@ -50,8 +53,15 @@ def gymkhana(request):
 
 	roll = request.user
 	name = request.user.first_name +"_"+ request.user.last_name
-	desig = request.user.extrainfo.user_type
-	return render(request, "gymkhanaModule/gymkhana.html", retrun_content(roll, name,desig))
+	desig = list(HoldsDesignation.objects.all().filter(working = request.user).values_list('designation'))
+	b = [i for sub in desig for i in sub]
+	roll_ = []
+	for i in b :
+		name_ = get_object_or_404(Designation, id = i)
+		print name_
+		roll_.append(str(name_.name))
+
+	return render(request, "gymkhanaModule/gymkhana.html", retrun_content(roll, name, roll_))
 
 @login_required
 def club_membership(request):
@@ -63,8 +73,9 @@ def club_membership(request):
 
 		#getting queryset class objects
 		#user_name = User.objects.get(username = user[-7:])
-		user_name = get_object_or_404(User, username = user[-7:])
-		extra = get_object_or_404(ExtraInfo, id = user[:-10], user = user_name)
+		USER = user.split(' - ')
+		user_name = get_object_or_404(User, username = USER[1])
+		extra = get_object_or_404(ExtraInfo, id = USER[0], user = user_name)
 		student = get_object_or_404(Student, id = extra)
 		#extra = ExtraInfo.objects.get(id = user[:-10], user = user_name)
 		#student = Student.objects.get(id = extra)
@@ -89,8 +100,9 @@ def core_team(request):
 		year = request.POST.get("year")
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = user[-7:])
-		extra = get_object_or_404(ExtraInfo, id = user[:-10], user = user_name)
+		USER = user.split(' - ')
+		user_name = get_object_or_404(User, username = USER[1])
+		extra = get_object_or_404(ExtraInfo, id = USER[00], user = user_name)
 		student = get_object_or_404(Student, id = extra)
 
 
@@ -113,23 +125,30 @@ def new_club(request):
 		d_d = request.POST.get("d_d")
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = co[-7:])
-		extra = get_object_or_404(ExtraInfo, id = co[:-10], user = user_name)
+		CO = co.split(' - ')
+		user_name = get_object_or_404(User, username = CO[1])
+		extra = get_object_or_404(ExtraInfo, id = CO[0], user = user_name)
 		co_student = get_object_or_404(Student, id = extra)
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = coco[-7:])
-		extra = get_object_or_404(ExtraInfo, id = coco[:-10], user = user_name)
+		COCO = coco.split(' - ')
+		user_name = get_object_or_404(User, username = COCO[1])
+		extra = get_object_or_404(ExtraInfo, id = COCO[0], user = user_name)
 		coco_student = get_object_or_404(Student, id = extra)
 
+		print "----------------------------------"
+		print COCO[1]
+		print COCO[0]
+		print "----------------------------"
 		#getting queryset class objects
 		faculty = faculty.split(" - ")
 		user_name = get_object_or_404(User, username = faculty[1])
 		faculty = get_object_or_404(ExtraInfo, id = faculty[0], user = user_name)
+		faculty_inc = get_object_or_404(Faculty, id = faculty)
 
 		club_file.name = club_name+"_club_file"
 
-		club_info = Club_info(club_name = club_name, category = category, co_ordinator = co_student, co_coordinator = coco_student, faculty_incharge = faculty, club_file = club_file, description = d_d)
+		club_info = Club_info(club_name = club_name, category = category, co_ordinator = co_student, co_coordinator = coco_student, faculty_incharge = faculty_inc, club_file = club_file, description = d_d)
 		club_info.save()
 		
 		messages.success(request,"Successfully sent the request !!!")
@@ -150,8 +169,9 @@ def event_report(request):
 		report.name = event+"_report"
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = user[-7:])
-		extra = get_object_or_404(ExtraInfo, id = user[:-10], user = user_name)
+		USER = user.split(' - ')
+		user_name = get_object_or_404(User, username = USER[1])
+		extra = get_object_or_404(ExtraInfo, id = USER[0], user = user_name)
 		
 		#saving data to the database
 		other_report = Other_report(incharge = extra, event_name = event, date = date+" "+time, event_details = report, description = d_d)
@@ -213,8 +233,9 @@ def club_report(request):
 		report.name = club+"_"+event+"_report"
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = user[-7:])
-		extra = get_object_or_404(ExtraInfo, id = user[:-10], user = user_name)
+		USER = user.split(' - ')
+		user_name = get_object_or_404(User, username = USER[1])
+		extra = get_object_or_404(ExtraInfo, id = USER[0], user = user_name)
 
 		club_name = get_object_or_404(Club_info, club_name = club)
 		
@@ -238,26 +259,38 @@ def change_head(request):
 		club_name = get_object_or_404(Club_info, club_name = club)
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = co[-7:])
-		extra = get_object_or_404(ExtraInfo, id = co[:-10], user = user_name)
+		CO = co.split(' - ')
+		user_name = get_object_or_404(User, username = CO[1])
+		extra = get_object_or_404(ExtraInfo, id = CO[0], user = user_name)
 		co_student = get_object_or_404(Student, id = extra)
 
 		#getting queryset class objects
-		user_name = get_object_or_404(User, username = coco[-7:])
-		extra1 = get_object_or_404(ExtraInfo, id = coco[:-10], user = user_name)
+		COCO = coco.split(' - ')
+		user_name1 = get_object_or_404(User, username = COCO[1])
+		extra1 = get_object_or_404(ExtraInfo, id = COCO[0], user = user_name1)
 		coco_student = get_object_or_404(Student, id = extra1)
 
 		club_info = get_object_or_404(Club_info, club_name = club_name)
+		
+		old_co = club_info.co_ordinator.id.user
+		old_coco = club_info.co_coordinator.id.user
+		print "--------111"
+		print old_coco, old_co
+
 		club_info.co_ordinator = co_student
 		club_info.co_coordinator = coco_student
 		club_info.save()
 
 		designation = get_object_or_404(Designation, name = "co-ordinator")
-		extra.designation = designation
-		extra.save()
+		get_object_or_404(HoldsDesignation, user = old_co, designation = designation).delete()
+		HoldsDesig = HoldsDesignation(user = user_name, working = user_name, designation = designation)
+		HoldsDesig.save()
+
 		designation = get_object_or_404(Designation, name = "co co-ordinator")
-		extra1.designation = designation
-		extra1.save()
+		get_object_or_404(HoldsDesignation, user = old_coco, designation = designation).delete()
+		HoldsDesig = HoldsDesignation(user = user_name1, working = user_name1, designation = designation)
+		HoldsDesig.save()
+		
 		messages.success(request,"Successfully changed the club heads !!!")
 
 	return redirect('/gymkhana/')
